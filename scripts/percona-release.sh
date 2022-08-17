@@ -3,11 +3,7 @@
 #
 #If you want to make script non-interactive please change this variable to NO
 INTERACTIVE=YES
-#
-if [[ $(id -u) -gt 0 ]]; then
-  echo "Please run $(basename ${0}) as root!"
-  exit 1
-fi
+
 #
 ALIASES="ps56 ps57 ps80 psmdb34 psmdb36 psmdb40 psmdb42 pxb24 pxb80 pxc56 pxc57 pxc80 ppg11 ppg11.5 ppg11.6 ppg11.7 ppg11.8 ppg12 ppg12.2 ppg12.3 pdmdb4.2 pdmdb4.2.6 pdmdb4.2.7 pdmdb4.2.8 pdps8.0.19 pdps8.0.20 pdpxc8.0.19 pdps8.0 pdpxc8.0 prel proxysql sysbench pt pmm-client pmm2-client mysql-shell pbm pdmdb4.4 pdmdb4.4.0 psmdb44"
 COMMANDS="enable enable-only setup disable show"
@@ -123,6 +119,16 @@ else
   echo "==>> ERROR: Unsupported operating system"
   exit 1
 fi
+
+#
+function check_root {
+  if [[ $(id -u) -gt 0 ]]; then
+    echo "ERROR: Please run $(basename ${0}) as root!"
+    show_help
+    exit 1
+  fi
+}
+
 #
 function show_enabled {
   echo "The following repositories are enabled on your system:"
@@ -561,6 +567,9 @@ function check_setup_command {
     exit 2
   fi
 }
+#
+check_root
+
 #
 if [[ ${COMMANDS} != *${1}* ]]; then
   echo "ERROR: Unknown action specified: ${1}"
